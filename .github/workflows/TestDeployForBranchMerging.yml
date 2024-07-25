@@ -1,0 +1,137 @@
+name: Build & Test then Deploy To Azure and Test EndPoints
+
+on:
+  push:
+    branches:
+      - "mergeAfterDeployAction"
+  workflow_dispatch:
+env:
+  AZURE_WEBAPP_NAME: "APINET8"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+run-name: Build & Test then Deploy To Azure and Test EndPoints by @${{ github.actor }} on ${{ github.ref }}
+jobs:
+  Build-Solution:
+    name: Build Solution
+    runs-on: windows-latest   
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      
+      - name: Build solution
+        run: dotnet build -c Release
+
+  xUnit-Test:
+    name: xUnit Test
+    runs-on: windows-latest   
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    needs: Build-Solution
+
+    steps:      
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run xUnit Test
+        run: dotnet test ./Test.APINET8/Test.APINET8.csproj  --verbosity normal --logger "trx;LogFileName=test-results.trx" 
+        
+      - name: Report Test
+        uses: dorny/test-reporter@v1
+        with:
+          name: Publish xUnit Test Result
+          reporter: dotnet-trx
+          path: "**/test-results.trx"  
+          fail-on-error: 'true'
+          fail-on-empty: 'true'
+
+  Deploy-To-Azure:
+    name: Deploy To Azure
+    runs-on: windows-latest   
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    needs: xUnit-Test
+
+    steps:      
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish
+        run: dotnet publish -c Release --output ./publish
+  
+      - name: Deploy To Azure Web App
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name : ${{env.AZURE_WEBAPP_NAME}}
+          publish-profile : ${{secrets.DEPLOY_APINET8_TO_AZURE}}
+          package : ./publish 
+
+  Test-Endpoints-Using-Postman-Collection:
+    name: Postman Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    needs: Deploy-To-Azure
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+        
+      - name: Install Newman Html Reporter & Slack 
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+          npm install -g newman-reporter-slackreporter
+        
+      - name: Make Dir for Test Result
+        run: mkdir -p testResults
+              
+      - name: Run Postman Collection 
+        env:
+          COLLECTION_UID: ${{secrets.POST_MAN_COLLECTION_ID}}
+          ENVIRONMENT_UID: ${{secrets.POST_MAN_ENVIRONMENT_ID}}  
+          API_KEY: ${{secrets.POST_MAN_TEST}}
+          SLACK_WEBHOOK_URL: ${{secrets.SLACK_WEB_HOOK_URL}}
+        run: |
+          newman run https://api.getpostman.com/collections/$COLLECTION_UID?apikey=$API_KEY --environment https://api.getpostman.com/environments/$ENVIRONMENT_UID?apikey=$API_KEY --suppress-exit-code --reporters slackreporter,htmlextra --reporter-htmlextra-export testResults/htmlReport.html --reporter-slackreporter-webhookurl $SLACK_WEBHOOK_URL --reporter-slackreporter-collection 'API Regression Test Suite' --reporter-slackreporter-environment QA --reporter-slackreporter-buildurl https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+              
+      - name: Result 
+        uses: actions/upload-artifact@v2
+        with:
+          name: RunReports
+          path: ./testResults
+        

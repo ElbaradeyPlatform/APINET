@@ -1,0 +1,1 @@
+[![Build & Test then Deploy To Azure and Test EndPoints](https://github.com/ahmedelbaradey/APINET/actions/workflows/DeployAfterBranchMerging.yml/badge.svg)](https://github.com/ahmedelbaradey/APINET/actions/workflows/DeployAfterBranchMerging.yml)

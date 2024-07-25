@@ -1,0 +1,50 @@
+name: Post Man Test
+
+on:
+  push:
+    branches:
+      - "mergeAfterDeployAction"
+  workflow_dispatch:
+
+run-name: Post Man Test by @${{ github.actor }} on ${{ github.ref }}
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: Install Newman Html Reporter & Slack 
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+          npm install -g newman-reporter-slackreporter
+
+      - name: Make Dir for Test Result
+        run: mkdir -p testResults
+      
+      - name: Run Postman Collection 
+        env:
+          COLLECTION_UID: ${{secrets.POST_MAN_COLLECTION_ID}}
+          ENVIRONMENT_UID: ${{secrets.POST_MAN_ENVIRONMENT_ID}}  
+          API_KEY: ${{secrets.POST_MAN_TEST}}
+          SLACK_WEBHOOK_URL: ${{secrets.SLACK_WEB_HOOK_URL}}
+        run: |
+          newman run https://api.getpostman.com/collections/$COLLECTION_UID?apikey=$API_KEY --environment https://api.getpostman.com/environments/$ENVIRONMENT_UID?apikey=$API_KEY --suppress-exit-code --reporters slackreporter,htmlextra --reporter-htmlextra-export testResults/htmlReport.html --reporter-slackreporter-webhookurl $SLACK_WEBHOOK_URL --reporter-slackreporter-collection 'API Regression Test Suite' --reporter-slackreporter-environment QA --reporter-slackreporter-buildurl https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+      
+      - name: Result 
+        uses: actions/upload-artifact@v2
+        with:
+          name: RunReports
+          path: ./testResults

@@ -1,0 +1,7 @@
+.vs
+.ssh
+.cache
+obj/
+bin/
+internal_logs/
+logs/
