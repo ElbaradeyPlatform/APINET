@@ -40,15 +40,15 @@ namespace Service.Logic
             await CheckIfCompanyExists(companyId, trackChanges);
             var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(companyId, employeeParameters, trackChanges);
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesWithMetaData);
-            var shapedData = _dataShaper.ShapeData(employeesDto,employeeParameters.Fields);
+            var shapedData = _dataShaper.ShapeData(employeesDto, employeeParameters.Fields);
             return (employees: shapedData, metaData: employeesWithMetaData.MetaData);
-       
+
         }
 
         public async Task<EmployeeDto> GetEmployeeAsync(int companyId, int id, bool trackChanges)
         {
             await CheckIfCompanyExists(companyId, trackChanges);
-            var employeeDb = GetEmployeeForCompanyAndCheckIfItExists(companyId, id, trackChanges);
+            var employeeDb = await GetEmployeeForCompanyAndCheckIfItExists(companyId, id, trackChanges);
             var employee = _mapper.Map<EmployeeDto>(employeeDb);
             return employee;
         }
@@ -68,17 +68,17 @@ namespace Service.Logic
             _repository.Employee.DeleteEmployee(employeeDb);
             await _repository.SaveAsync();
         }
-        public async Task UpdateEmployeeForCompanyAsync(int companyId, int id, EmployeeForUpdateDto employeeForUpdate,bool compTrackChanges, bool empTrackChanges)
+        public async Task UpdateEmployeeForCompanyAsync(int companyId, int id, EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges)
         {
             await CheckIfCompanyExists(companyId, compTrackChanges);
-            var employeeDb = await GetEmployeeForCompanyAndCheckIfItExists(companyId, id,empTrackChanges);
+            var employeeDb = await GetEmployeeForCompanyAndCheckIfItExists(companyId, id, empTrackChanges);
             _mapper.Map(employeeForUpdate, employeeDb);
             await _repository.SaveAsync();
         }
         public async Task<(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)> GetEmployeeForPatchAsync(int companyId, int id, bool compTrackChanges, bool empTrackChanges)
         {
             await CheckIfCompanyExists(companyId, compTrackChanges);
-            var employeeEntity = await GetEmployeeForCompanyAndCheckIfItExists(companyId, id,empTrackChanges);
+            var employeeEntity = await GetEmployeeForCompanyAndCheckIfItExists(companyId, id, empTrackChanges);
             var employeeToPatch = _mapper.Map<EmployeeForUpdateDto>(employeeEntity);
             return (employeeToPatch, employeeEntity);
         }
@@ -89,13 +89,13 @@ namespace Service.Logic
         }
         private async Task CheckIfCompanyExists(int companyId, bool trackChanges)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyId,trackChanges);
-            if (company is null) 
-            throw new ApiException(new GenericError($"The company with id: {companyId} doesn't exist in the database.", "NO DATA", Guid.NewGuid(), DateTime.Now, false), 400);
+            var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
+            if (company is null)
+                throw new ApiException(new GenericError($"The company with id: {companyId} doesn't exist in the database.", "NO DATA", Guid.NewGuid(), DateTime.Now, false), 400);
         }
-        private async Task<Employee> GetEmployeeForCompanyAndCheckIfItExists (int companyId, int id, bool trackChanges)
+        private async Task<Employee> GetEmployeeForCompanyAndCheckIfItExists(int companyId, int id, bool trackChanges)
         {
-            var employeeDb = await _repository.Employee.GetEmployeeAsync(companyId, id,trackChanges);
+            var employeeDb = await _repository.Employee.GetEmployeeAsync(companyId, id, trackChanges);
             if (employeeDb is null)
                 throw new ApiException(new GenericError($"Employee with id: {id} doesn't exist in the database.", "NO DATA", Guid.NewGuid(), DateTime.Now, false), 400);
             return employeeDb;
