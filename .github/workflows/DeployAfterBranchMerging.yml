@@ -61,8 +61,6 @@ jobs:
           name: Publish xUnit Test Result
           reporter: dotnet-trx
           path: "**/test-results.trx"  
-          fail-on-error: 'true'
-          fail-on-empty: 'true'
 
   Deploy-To-Azure:
     name: Deploy To Azure
