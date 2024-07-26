@@ -24,22 +24,6 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.SignalR;
 namespace Test.APINET8
 {
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
-        {
-
-            CreateMap<Company, CompanyDto>()
-            .ForMember(c => c.FullAddress,
-            opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
-            CreateMap<Employee, EmployeeDto>();
-            CreateMap<CompanyForCreationDto, Company>();
-            CreateMap<EmployeeForCreationDto, Employee>();
-            CreateMap<EmployeeForUpdateDto, Employee>();
-            CreateMap<CompanyForUpdateDto, Company>();
-            CreateMap<EmployeeForUpdateDto, Employee>().ReverseMap();
-        }
-    }
     public class CompaniesTest
     {
         private CompaniesController _controller;
@@ -59,84 +43,68 @@ namespace Test.APINET8
             serviceManager = new ServiceManager(_repo, logger, mapper);
             _controller = new CompaniesController(serviceManager);
         }
-
+        #region Get Company Test 
         [Fact]
-        public async Task GetAllCompanies_ShouldReturnOk()
+        public async Task GetCompany_ShouldReturnOk()
         {
             //Arrange
-            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = 1, PageSize = 100 };
+
             //Act
-            var result = await _controller.GetCompanies(_params);
-            var response = ((OkObjectResult)result).Value;
+            var result = await _controller.GetCompany(2);
+            var response = result.As<OkObjectResult>().Value;
+            var payload = response.As<GenericResponse>().Payload;
+            var company = payload.As<IEnumerable<CompanyDto>>().FirstOrDefault();
+
             //Assert
             Assert.IsType<OkObjectResult>(result);
-
-        }
-        [Fact]
-        public async Task GetAllCompanies_ShouldReturnGenericResponse()
-        {
-            //Arrange
-            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = 1, PageSize = 100 };
-            //Act
-            var result = await _controller.GetCompanies(_params);
-            var response = ((OkObjectResult)result).Value;
-            var payload = ((GenericResponse)((OkObjectResult)result).Value).Payload;
-            //Assert
-            Assert.IsType<OkObjectResult>(result);
-
-        }
-        [Fact]
-        public async Task GetAllCompanies_ShouldReturnCompanyDtoList()
-        {
-            //Arrange
-            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = 1, PageSize = 100 };
-            //Act
-            var result = await _controller.GetCompanies(_params);
-            var response = ((OkObjectResult)result).Value;
-            var payload = ((GenericResponse)((OkObjectResult)result).Value).Payload;
-            //Assert
             Assert.IsType<GenericResponse>(response);
-        }
-        [Fact]
-        public async Task GetAllCompanies_ShouldReturnNoEmptyList()
-        {
-            //Arrange
-            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = 1, PageSize = 100 };
-            //Act
-            var result = await _controller.GetCompanies(_params);
-            var response = ((OkObjectResult)result).Value;
-            var payload = ((GenericResponse)((OkObjectResult)result).Value).Payload;
-            //Assert
             Assert.NotEmpty(payload);
+            Assert.IsType<CompanyDto>(company);
         }
+        #endregion
+
+        #region Get Companies Test
         [Fact]
-        public async Task GetAllCompanies_ShouldReturnNoMoreThan50CompaniesPerPage()
+        public async Task GetCompanies_ShouldReturnOk()
         {
             //Arrange
-            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = 1, PageSize = 100 };
+            var _params = new Shared.RequestFeatures.CompanyParameters();
+
             //Act
             var result = await _controller.GetCompanies(_params);
-            var response = ((OkObjectResult)result).Value;
-            var payload = ((GenericResponse)((OkObjectResult)result).Value).Payload;
-            //Assert
-            Assert.True(payload.Count() == 50);
-        }
+            var response = result.As<OkObjectResult>().Value;
+            var payload = response.As<GenericResponse>().Payload;
 
+            //Assert
+            Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<GenericResponse>(response);
+            Assert.IsType<List<CompanyDto>>(payload);
+            Assert.NotEmpty(payload);
+            Assert.True(payload.Count() < 51);
+        }
+       
         [Theory]
         [InlineData(1, 1)]
         [InlineData(2, 1)]
         [InlineData(3, 1)]
         [InlineData(5, 1)]
-        public async Task GetAllCompanies_ShouldReturnCompanyList(int pageNumber, int pageSize)
+        [InlineData(1, 1, "streamline")]
+        public async Task GetCompanies_ShouldReturnCompanyList(int pageNumber, int pageSize, string searchTerm = "")
         {
             //Arrange
-            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = pageNumber, PageSize = pageSize };
+            var _params = new Shared.RequestFeatures.CompanyParameters() { PageNumber = pageNumber, PageSize = pageSize, SearchTerm = string.IsNullOrEmpty(searchTerm) ? null : searchTerm };
+
             //Act
             var result = await _controller.GetCompanies(_params);
-            var response = ((OkObjectResult)result).Value;
-            var payload = ((GenericResponse)((OkObjectResult)result).Value).Payload;
+            var response = result.As<OkObjectResult>().Value;
+            var payload = response.As<GenericResponse>().Payload;
+
             //Assert
+            Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<GenericResponse>(response);
+            Assert.IsType<List<CompanyDto>>(payload);
             Assert.NotEmpty(payload);
         }
+        #endregion
     }
 }

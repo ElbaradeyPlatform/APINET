@@ -45,14 +45,14 @@ namespace Presentation.Controllers
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
             var createdCompany = await _service.CompanyService.CreateCompanyAsync(company);
-            return CreatedAtRoute("CompanyById", new { id = createdCompany.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(company, 1), new MetaData(), string.Empty));
+            return CreatedAtRoute("CompanyById", new { id = createdCompany.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(company, 1), new MetaData(), string.Empty,201));
         }
 
         [HttpPost("collection")]
         public async Task<IActionResult> CreateCompanyCollection([FromBody]IEnumerable<CompanyForCreationDto> companyCollection)
         {
             var result = await _service.CompanyService.CreateCompanyCollectionAsync(companyCollection);
-            return CreatedAtRoute("CompanyCollection", new { result.ids },result.companies);
+            return CreatedAtRoute("CompanyCollection", new { result.ids }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), result.companies, new MetaData(), string.Empty));
         }
 
         [HttpDelete("{id:int}")]

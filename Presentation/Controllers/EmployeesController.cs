@@ -22,10 +22,8 @@ namespace Presentation.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IServiceManager _service;
-        private readonly ILoggerManager _logger;
-        public EmployeesController(IServiceManager service, ILoggerManager logger) {
+        public EmployeesController(IServiceManager service) {
             _service = service;
-            _logger = logger;
         }
         [HttpGet]
         public async Task<IActionResult> GetEmployeesForCompany(int companyId, [FromQuery] EmployeeParameters employeeParameters)
@@ -47,7 +45,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> CreateEmployeeForCompany(int companyId, [FromBody] EmployeeForCreationDto employee)
         {
             var employeeToReturn = await _service.EmployeeService.CreateEmployeeForCompanyAsync(companyId, employee, trackChanges: false);
-            return CreatedAtRoute("GetEmployeeForCompany", new { companyId, id = employeeToReturn.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(employeeToReturn, 1), new MetaData(), string.Empty));
+            return CreatedAtRoute("GetEmployeeForCompany", new { companyId, id = employeeToReturn.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(employeeToReturn, 1), new MetaData(), string.Empty,201));
         }
         
         [HttpDelete("{id:int}")]
