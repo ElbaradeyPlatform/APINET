@@ -61,5 +61,3 @@ jobs:
           name: Publish xUnit Test Result
           reporter: dotnet-trx
           path: "**/test-results.trx"  
-          fail-on-error: 'true'
-          fail-on-empty: 'true'
