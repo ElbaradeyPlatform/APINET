@@ -51,7 +51,7 @@ namespace Presentation.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteEmployeeForCompany(int companyId, int id)
         {
-            await _service.EmployeeService.DeleteEmployeeForCompanyAsync(companyId, id, trackChanges:false);
+            await _service.EmployeeService.DeleteEmployeeForCompanyAsync(companyId, id, trackChanges:true);
             return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), null, null, string.Empty));
         }
 

@@ -45,7 +45,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
             var createdCompany = await _service.CompanyService.CreateCompanyAsync(company);
-            return CreatedAtRoute("CompanyById", new { id = createdCompany.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(company, 1), new MetaData(), string.Empty,201));
+            return CreatedAtRoute("CompanyById", new { id = createdCompany.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(createdCompany, 1), new MetaData(), string.Empty,201));
         }
 
         [HttpPost("collection")]
@@ -58,7 +58,7 @@ namespace Presentation.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
-            await _service.CompanyService.DeleteCompanyAsync(id, trackChanges: false);
+            await _service.CompanyService.DeleteCompanyAsync(id, trackChanges: true);
             return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), null, null, string.Empty));
         }
 

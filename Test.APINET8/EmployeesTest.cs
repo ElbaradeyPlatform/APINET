@@ -128,5 +128,58 @@ namespace Test.APINET8
             Assert.NotEmpty(payload);
         }
         #endregion
+
+        #region Create Company Test
+        [Fact]
+        public async Task CreateEmployee_ShouldReturnOk()
+        {
+            //Arrange
+            var _employee = new EmployeeForCreationDto() { Name = "Create Employee Test", Age=34 , Position="Manager" };
+            int _companyId = 2;
+
+            //Act
+            var data = await _controller.CreateEmployeeForCompany(_companyId, _employee);
+            var result = data.As<CreatedAtRouteResult>().Value;
+            var response = (result.As<GenericResponse>().Payload).FirstOrDefault();
+           
+            //Assert
+            Assert.IsType<CreatedAtRouteResult>(data);
+            Assert.IsType<GenericResponse>(result);
+            Assert.IsType<EmployeeDto>(response);
+            Assert.True(result.As<GenericResponse>().Code == 201);
+        }
+        #endregion
+
+        #region Delete Company Test
+        [Fact]
+        public async Task DeleteEmployee_ShouldReturnOk()
+        {
+            //Arrange
+            var _employee = new EmployeeForCreationDto() { Name = "Create Employee Test", Age = 34, Position = "Manager" };
+            int _companyId = 2;
+
+            //Act
+            //Create
+            var data = await _controller.CreateEmployeeForCompany(_companyId, _employee);
+            var result = data.As<CreatedAtRouteResult>().Value;
+            var response = (result.As<GenericResponse>().Payload).FirstOrDefault();
+            var employeeId = response.As<EmployeeDto>().Id;
+            //Delete
+            var _data = await _controller.DeleteEmployeeForCompany(_companyId,employeeId);
+            var _response = _data.As<OkObjectResult>().Value;
+
+            //Assert
+            //Create
+            Assert.IsType<CreatedAtRouteResult>(data);
+            Assert.IsType<GenericResponse>(result);
+            Assert.IsType<EmployeeDto>(response);
+            Assert.True(result.As<GenericResponse>().Code == 201);
+            //Delete
+            Assert.IsType<OkObjectResult>(_data);
+            Assert.True(_response.As<GenericResponse>().Code == 200);
+        }
+
+
+        #endregion
     }
 }
