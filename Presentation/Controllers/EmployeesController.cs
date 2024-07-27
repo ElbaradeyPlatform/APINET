@@ -60,7 +60,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> UpdateEmployeeForCompany(int companyId, int id,[FromBody] EmployeeForUpdateDto employee)
         {
             await _service.EmployeeService.UpdateEmployeeForCompanyAsync(companyId, id, employee,compTrackChanges: false, empTrackChanges: true);
-            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), null, null, string.Empty));
+            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(employee, 1), new MetaData(), string.Empty));
         }
 
         [HttpPatch("{id:int}")]

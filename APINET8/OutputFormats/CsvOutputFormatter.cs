@@ -60,7 +60,7 @@ namespace APINET8.OutputFormats
             else if(obj is CompanyDto)
             {
                 CompanyDto company = (CompanyDto)obj;
-                buffer.AppendLine($"{company.Id},\"{company.Name},\"{company.FullAddress}\"");
+                buffer.AppendLine($"{company.Id},\"{company.Name},\"{company.Address }\"");
             }
             
         }

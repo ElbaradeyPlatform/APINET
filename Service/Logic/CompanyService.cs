@@ -10,6 +10,7 @@ using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -22,19 +23,23 @@ namespace Service.Logic
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        public CompanyService(IRepositoryManager repository, ILoggerManager logger,IMapper mapper)
+        private readonly IDataShaper<CompanyDto> _dataShaper;
+        public CompanyService(IRepositoryManager repository, ILoggerManager logger,IMapper mapper, IDataShaper<CompanyDto> dataShaper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _dataShaper = dataShaper;
         }
 
-        public async Task<(IEnumerable<CompanyDto> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
+        public async Task<(IEnumerable<ExpandoObject>  companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
         {
             var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(companyParameters,trackChanges);
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
-            return (companies: companiesDto, metaData: companiesWithMetaData.MetaData);
+            var shapedData = _dataShaper.ShapeData(companiesDto, companyParameters.Fields);
+            return (companies: shapedData, metaData: companiesWithMetaData.MetaData);
         }
+
         public async Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<int> ids, bool trackChanges)
         {
             if (ids is null)
@@ -45,6 +50,7 @@ namespace Service.Logic
             var companiesToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
             return companiesToReturn;
         }
+
         public async Task<CompanyDto> GetCompanyAsync(int id, bool trackChanges)
         {
             var company = await GetCompanyAndCheckIfItExists(id, trackChanges);

@@ -67,7 +67,7 @@ namespace Presentation.Controllers
         public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyForUpdateDto company)
         {
             await _service.CompanyService.UpdateCompanyAsync(id, company, trackChanges:true);
-            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(company, 1), null, string.Empty));
+            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(company, 1), new MetaData(), string.Empty));
         }
     }
 }

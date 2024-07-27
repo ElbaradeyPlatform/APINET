@@ -16,10 +16,10 @@ namespace Repository.Extensions
         public static IQueryable<Company> Sort(this IQueryable<Company> companies, string orderByQueryString)
         {
             if (string.IsNullOrWhiteSpace(orderByQueryString))
-                return companies.OrderBy(e => e.Name);
+                return companies.OrderBy(e => e.Id);
             var orderQuery = OrderQueryBuilder.CreateOrderQuery<Company>(orderByQueryString);
             if (string.IsNullOrWhiteSpace(orderQuery))
-                return companies.OrderBy(e => e.Name);
+                return companies.OrderBy(e => e.Id);
             return companies.OrderBy(orderQuery);
         }
     }
