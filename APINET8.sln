@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{518E2A2C-686E-4314-A806-654E2C39C554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.APINET8", "Test.APINET8\Test.APINET8.csproj", "{EAB7924F-21F6-4EC0-BC05-868472ECEC78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.APINET8", "Test.APINET8\Test.APINET8.csproj", "{EAB7924F-21F6-4EC0-BC05-868472ECEC78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
