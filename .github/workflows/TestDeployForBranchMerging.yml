@@ -1,4 +1,4 @@
-name: Build & Test then Deploy To Azure and Test EndPoints
+name: Build & Test xUnit
 
 on:
   push:
