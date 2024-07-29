@@ -1,7 +1,7 @@
 ﻿
 using AutoWrapper.Wrappers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Shared.Handlers;
+using Entities.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

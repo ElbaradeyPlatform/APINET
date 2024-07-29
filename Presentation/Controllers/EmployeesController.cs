@@ -1,19 +1,14 @@
 ﻿using AutoWrapper.Wrappers;
-using Contracts;
-using Entities.DataModels;
-using Microsoft.AspNetCore.Http.Extensions;
+using Entities.LinkModels;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using Presentation.ActionFilters;
-using Presentation.Handlers;
 using Service.Contracts;
 using Shared.DataTransferObjects;
-using Shared.Handlers;
+using Entities.Handlers;
 using Shared.RequestFeatures;
-using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+ 
+
 
 namespace Presentation.Controllers
 {
@@ -25,42 +20,50 @@ namespace Presentation.Controllers
         public EmployeesController(IServiceManager service) {
             _service = service;
         }
+
         [HttpGet]
+        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetEmployeesForCompany(int companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
-            var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId,employeeParameters, trackChanges: false);
+            
+            var linkParams = new EmployeeLinkParameters(employeeParameters, HttpContext);
+            var result = await _service.EmployeeService.GetEmployeesAsync(companyId, linkParams, trackChanges: false);
             //_logger.LogInfo($"Something went wrong: {pagedResult.SentDate}", nameof(GetEmployeeForCompany) ,Request.GetDisplayUrl());
-            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), pagedResult.employees, pagedResult.metaData, string.Empty));
+            //    return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), pagedResult.employees, pagedResult.metaData, string.Empty));
+            return Ok(result);
         }
 
         [HttpGet("{id:int}", Name = "GetEmployeeForCompany")]
         public async Task<IActionResult> GetEmployeeForCompany(int companyId, int id)
         {
-            var employee =await _service.EmployeeService.GetEmployeeAsync(companyId, id, trackChanges: false);
-            return Ok( new  GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(employee, 1), new MetaData(), string.Empty));
+            var linkParams = new EmployeeLinkParameters(new EmployeeParameters(), HttpContext);
+            var result = await _service.EmployeeService.GetEmployeeAsync(companyId, id, linkParams, trackChanges: false);
+            return Ok(result);
         }
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(int companyId, [FromBody] EmployeeForCreationDto employee)
         {
-            var employeeToReturn = await _service.EmployeeService.CreateEmployeeForCompanyAsync(companyId, employee, trackChanges: false);
-            return CreatedAtRoute("GetEmployeeForCompany", new { companyId, id = employeeToReturn.Id }, new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(employeeToReturn, 1), new MetaData(), string.Empty,201));
+            var linkParams = new EmployeeLinkParameters(new EmployeeParameters(), HttpContext);
+            var result = await _service.EmployeeService.CreateEmployeeForCompanyAsync(companyId, employee, linkParams,trackChanges: false);
+            return CreatedAtRoute("GetEmployeeForCompany", new { companyId, id = result.id }, result.response);
         }
         
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteEmployeeForCompany(int companyId, int id)
         {
             await _service.EmployeeService.DeleteEmployeeForCompanyAsync(companyId, id, trackChanges:true);
-            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), null, null, string.Empty));
+            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), payload: null, null, string.Empty));
         }
 
         [HttpPut("{id:int}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateEmployeeForCompany(int companyId, int id,[FromBody] EmployeeForUpdateDto employee)
         {
-            await _service.EmployeeService.UpdateEmployeeForCompanyAsync(companyId, id, employee,compTrackChanges: false, empTrackChanges: true);
-            return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), Enumerable.Repeat(employee, 1), new MetaData(), string.Empty));
+            var linkParams = new EmployeeLinkParameters(new EmployeeParameters(), HttpContext);
+           var result =   await _service.EmployeeService.UpdateEmployeeForCompanyAsync(companyId, id, employee, linkParams,compTrackChanges: false, empTrackChanges: true);
+            return Ok(result);
         }
 
         [HttpPatch("{id:int}")]

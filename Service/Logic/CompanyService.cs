@@ -2,19 +2,13 @@
 using AutoWrapper.Wrappers;
 using Contracts;
 using Entities.DataModels;
-using Entities.Exceptions;
 using Service.Contracts;
 using Shared.DataTransferObjects;
-using Shared.Handlers;
 using Shared.RequestFeatures;
-using System;
-using System.Collections.Generic;
+using Entities.Handlers;
+using Entities.LinkModels;
 using System.ComponentModel.Design;
-using System.Dynamic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Service.Logic
 {
@@ -24,23 +18,23 @@ namespace Service.Logic
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
         private readonly IDataShaper<CompanyDto> _dataShaper;
-        public CompanyService(IRepositoryManager repository, ILoggerManager logger,IMapper mapper, IDataShaper<CompanyDto> dataShaper)
+        private readonly ICompanyLinks _comanyLinks;
+        public CompanyService(IRepositoryManager repository, ILoggerManager logger,IMapper mapper, IDataShaper<CompanyDto> dataShaper ,ICompanyLinks comanyLinks)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _dataShaper = dataShaper;
+            _comanyLinks = comanyLinks;
         }
-
-        public async Task<(IEnumerable<ExpandoObject>  companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
+        public async Task<GenericResponse> GetAllCompaniesAsync(CompanyLinkParameters linkParameters, bool trackChanges)
         {
-            var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(companyParameters,trackChanges);
+            var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(linkParameters.CompanyParameters, trackChanges);
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
-            var shapedData = _dataShaper.ShapeData(companiesDto, companyParameters.Fields);
-            return (companies: shapedData, metaData: companiesWithMetaData.MetaData);
+            var links = _comanyLinks.TryGenerateLinks(companiesDto, linkParameters.CompanyParameters.Fields, linkParameters.Context);
+            return new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), links, companiesWithMetaData.MetaData, string.Empty);
         }
-
-        public async Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<int> ids, bool trackChanges)
+        public async Task<GenericResponse> GetByIdsAsync(IEnumerable<int> ids, CompanyLinkParameters linkParameters, bool trackChanges)
         {
             if (ids is null)
                 throw new ApiException(new GenericError($"Parameter ids is null", "Parameters NULL", Guid.NewGuid(), DateTime.Now, false), 400);     
@@ -48,24 +42,28 @@ namespace Service.Logic
             if (ids.Count() != companyEntities.Count())
                 throw new ApiException(new GenericError($"Collection count mismatch comparing to ids.", "GET Collection", Guid.NewGuid(), DateTime.Now, false), 400);
             var companiesToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
-            return companiesToReturn;
+            var links = _comanyLinks.TryGenerateLinks(companiesToReturn, linkParameters.CompanyParameters.Fields, linkParameters.Context);
+            return new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), links, new MetaData(), string.Empty);
         }
-
-        public async Task<CompanyDto> GetCompanyAsync(int id, bool trackChanges)
+        public async Task<GenericResponse> GetCompanyAsync(int id, CompanyLinkParameters linkParameters, bool trackChanges)
         {
             var company = await GetCompanyAndCheckIfItExists(id, trackChanges);
             var companyDto = _mapper.Map<CompanyDto>(company);
-            return companyDto;
+            var companies = Enumerable.Repeat(companyDto, 1);
+            var links = _comanyLinks.TryGenerateLinks(companies, linkParameters.CompanyParameters.Fields, linkParameters.Context);
+            return new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), links, new MetaData(), string.Empty);
         }
-        public async Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company)
+        public async Task<(GenericResponse response, int id)> CreateCompanyAsync(CompanyForCreationDto company,CompanyLinkParameters linkParameters )
         {
            var companyEntity = _mapper.Map<Company>(company);
             _repository.Company.CreateCompany(companyEntity);
             await _repository.SaveAsync();
-            var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
-            return companyToReturn;
+            var companyDto = _mapper.Map<CompanyDto>(companyEntity);
+            var companies = Enumerable.Repeat(companyDto, 1);
+            var links = _comanyLinks.TryGenerateLinks(companies, linkParameters.CompanyParameters.Fields, linkParameters.Context);
+            return (new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"),links, new MetaData(), string.Empty, 201), companyDto.Id);
         }
-        public async Task<(IEnumerable<CompanyDto> companies, string ids)> CreateCompanyCollectionAsync (IEnumerable<CompanyForCreationDto> companyCollection)
+        public async Task<(GenericResponse response, string ids)> CreateCompanyCollectionAsync (IEnumerable<CompanyForCreationDto> companyCollection,CompanyLinkParameters linkParameters)
         {
             if (companyCollection is null) 
                 throw new ApiException(new GenericError($"Company collection sent from a client is null.", "NULL Company collection", Guid.NewGuid(), DateTime.Now, false), 400);
@@ -75,9 +73,10 @@ namespace Service.Logic
                 _repository.Company.CreateCompany(company);
             }
             await _repository.SaveAsync();
-            var companyCollectionToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
-            var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id)); 
-            return (companies: companyCollectionToReturn, ids: ids);
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+            var ids = string.Join(",", companiesDto.Select(c => c.Id));
+            var links = _comanyLinks.TryGenerateLinks(companiesDto, linkParameters.CompanyParameters.Fields, linkParameters.Context);
+            return (new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), links, new MetaData(), string.Empty, 201), ids);
         }
         public async Task DeleteCompanyAsync(int companyId, bool trackChanges)
         {
@@ -85,11 +84,15 @@ namespace Service.Logic
             _repository.Company.DeleteCompany(company);
            await _repository.SaveAsync();
         }
-        public async Task UpdateCompanyAsync(int companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)
+        public async Task<GenericResponse> UpdateCompanyAsync(int companyId, CompanyForUpdateDto companyForUpdate, CompanyLinkParameters linkParameters ,bool trackChanges)
         {
             var companyEntity = await GetCompanyAndCheckIfItExists(companyId, trackChanges);
-            _mapper.Map(companyForUpdate, companyEntity);
+             _mapper.Map(companyForUpdate, companyEntity);         
             await _repository.SaveAsync ();
+            var companyDto = _mapper.Map<CompanyDto>(companyEntity);
+            var companies = Enumerable.Repeat(companyDto, 1);
+            var links = _comanyLinks.TryGenerateLinks(companies, linkParameters.CompanyParameters.Fields, linkParameters.Context);
+            return (new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), links, new MetaData(), string.Empty));
         }
         private async Task<Company> GetCompanyAndCheckIfItExists(int id, bool trackChanges)
         {

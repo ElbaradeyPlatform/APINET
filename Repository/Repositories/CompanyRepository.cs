@@ -18,8 +18,9 @@ namespace Repository.Repositories
             var companies = await FindAll(trackChanges)
                 .Search(companyParameters.SearchTerm)
                 .Sort(companyParameters.OrderBy)
-                .Skip((companyParameters.PageNumber - 1) * companyParameters.PageSize)
-                .Take(companyParameters.PageSize).ToListAsync();
+                .Page(companyParameters.PageSize, companyParameters.PageNumber).ToListAsync();
+            //    .Skip((companyParameters.PageNumber - 1) * companyParameters.PageSize)
+            //    .Take(companyParameters.PageSize).ToListAsync();
             var count = await FindAll( trackChanges).Search(companyParameters.SearchTerm).CountAsync();
             return new PagedList<Company>(companies, count, companyParameters.PageNumber, companyParameters.PageSize);
         }

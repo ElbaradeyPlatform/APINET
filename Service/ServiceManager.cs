@@ -15,10 +15,10 @@ namespace Service
     {
         private readonly Lazy<ICompanyService> _companyService;
         private readonly Lazy<IEmployeeService> _employeeService;
-       public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger,IMapper mapper, IDataShaper<EmployeeDto> employeedataShaper, IDataShaper<CompanyDto> companydataShaper)
+       public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger,IMapper mapper, IDataShaper<EmployeeDto> employeedataShaper, IDataShaper<CompanyDto> companydataShaper, IEmployeeLinks employeeLinks, ICompanyLinks companyLinks)
        {
-            _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper, companydataShaper));
-            _employeeService = new Lazy<IEmployeeService>(() =>new EmployeeService(repositoryManager, logger, mapper, employeedataShaper));
+            _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper, companydataShaper, companyLinks));
+            _employeeService = new Lazy<IEmployeeService>(() =>new EmployeeService(repositoryManager, logger, mapper, employeedataShaper, employeeLinks));
         }
         
         public ICompanyService CompanyService => _companyService.Value;

@@ -1,13 +1,13 @@
 ﻿using AutoWrapper;
-using Shared.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Presentation.Handlers
+namespace Entities.Handlers
 {
+ 
     public class MapResponse
     {
         [AutoWrapperPropertyMap(Prop.Result)]

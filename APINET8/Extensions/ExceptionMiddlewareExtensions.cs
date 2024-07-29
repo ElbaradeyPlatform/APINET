@@ -1,10 +1,8 @@
-﻿using AutoWrapper;
-using Contracts;
+﻿using Contracts;
 using Entities.Exceptions;
 using Entities.GenericModels;
 using Microsoft.AspNetCore.Diagnostics;
-using Shared.Handlers;
-using System.Net;
+
 
 namespace APINET8.Extensions
 {

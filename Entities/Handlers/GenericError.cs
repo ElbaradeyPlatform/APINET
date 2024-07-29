@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.Handlers
+namespace Entities.Handlers
 {
+ 
     public class GenericError
     {
         public string Message { get; set; }
