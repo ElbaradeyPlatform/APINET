@@ -12,6 +12,7 @@ namespace Presentation.Controllers
 {
     [Route("api/companies")]
     [ApiController]
+
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _service;
