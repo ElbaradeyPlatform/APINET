@@ -36,6 +36,9 @@ namespace APINET8.Extensions
                 {
                     systemTextJsonOutputFormatter.SupportedMediaTypes
                     .Add("application/vnd.ae.hateoas+json");
+                    systemTextJsonOutputFormatter.SupportedMediaTypes
+                   .Add("application/vnd.ae.apiroot+json");
+
                 }
                 var xmlOutputFormatter = config.OutputFormatters
                 .OfType<XmlDataContractSerializerOutputFormatter>()?
@@ -44,6 +47,8 @@ namespace APINET8.Extensions
                 {
                     xmlOutputFormatter.SupportedMediaTypes
                     .Add("application/vnd.ae.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes
+                   .Add("application/vnd.ae.apiroot+xml");
                 }
             });
         }

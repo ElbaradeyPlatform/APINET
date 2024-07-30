@@ -21,7 +21,14 @@ namespace Presentation.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        [HttpOptions(Name ="EmployeeOptions")]
+        public IActionResult GetCompaniesOptions()
+        {
+            Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+            return Ok();
+        }
+
+        [HttpGet(Name = "GetEmployeesForCompany")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetEmployeesForCompany(int companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
@@ -29,11 +36,10 @@ namespace Presentation.Controllers
             var linkParams = new EmployeeLinkParameters(employeeParameters, HttpContext);
             var result = await _service.EmployeeService.GetEmployeesAsync(companyId, linkParams, trackChanges: false);
             //_logger.LogInfo($"Something went wrong: {pagedResult.SentDate}", nameof(GetEmployeeForCompany) ,Request.GetDisplayUrl());
-            //    return Ok(new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"), pagedResult.employees, pagedResult.metaData, string.Empty));
             return Ok(result);
         }
 
-        [HttpGet("{id:int}", Name = "GetEmployeeForCompany")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetEmployeeForCompany(int companyId, int id)
         {
             var linkParams = new EmployeeLinkParameters(new EmployeeParameters(), HttpContext);
@@ -41,7 +47,7 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateEmployeeForCompany")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(int companyId, [FromBody] EmployeeForCreationDto employee)
         {
