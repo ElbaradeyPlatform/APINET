@@ -14,7 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageReference Include="AutoWrapper.Core" Version="4.5.1" />
+    <PackageReference Include="Marvin.Cache.Headers" Version="7.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.38" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.6" />

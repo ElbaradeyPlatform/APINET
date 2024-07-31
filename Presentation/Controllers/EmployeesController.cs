@@ -28,7 +28,7 @@ namespace Presentation.Controllers
             return Ok();
         }
 
-        [HttpGet(Name = "GetEmployeesForCompany")]
+        [HttpGet]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetEmployeesForCompany(int companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
@@ -39,7 +39,7 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetEmployeeForCompany")]
         public async Task<IActionResult> GetEmployeeForCompany(int companyId, int id)
         {
             var linkParams = new EmployeeLinkParameters(new EmployeeParameters(), HttpContext);
@@ -47,7 +47,7 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpPost(Name = "CreateEmployeeForCompany")]
+        [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(int companyId, [FromBody] EmployeeForCreationDto employee)
         {

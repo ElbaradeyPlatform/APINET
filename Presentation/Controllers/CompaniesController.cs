@@ -1,4 +1,5 @@
-﻿using Entities.Handlers;
+﻿using Asp.Versioning;
+using Entities.Handlers;
 using Entities.LinkModels;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -11,9 +12,11 @@ using System.Xml.Linq;
 
 namespace Presentation.Controllers
 {
+    [ApiVersion("1.0")]
     [Route("api/companies")]
+   // [Route("api/{v:apiversion}/companies")]
     [ApiController]
-
+    [ResponseCache(CacheProfileName = "120SecondsDuration")]
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _service;
@@ -28,6 +31,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet(Name = "GetCompanies")]
+   //     [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)
         {
             var linkParams = new CompanyLinkParameters(companyParameters, HttpContext);
@@ -35,7 +39,7 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpGet("collection/({ids})")]
+        [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection([ModelBinder(BinderType =typeof(ArrayModelBinder))]IEnumerable<int> ids)
         {
             var linkParams = new CompanyLinkParameters(new CompanyParameters(), HttpContext);
@@ -43,7 +47,7 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "CompanyById")]
         public async Task<IActionResult> GetCompany(int id)
         {
             var linkParams = new CompanyLinkParameters(new CompanyParameters(), HttpContext);
@@ -51,7 +55,7 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        [HttpPost(Name ="CreateCompany")]
+        [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
@@ -60,7 +64,7 @@ namespace Presentation.Controllers
             return CreatedAtRoute("CompanyById", new { id = result.id }, result.response);
         }
 
-        [HttpPost(Name = "CreateCompanyCollection")]
+        [HttpPost("collection")]
         public async Task<IActionResult> CreateCompanyCollection([FromBody]IEnumerable<CompanyForCreationDto> companyCollection)
         {
             var linkParams = new CompanyLinkParameters(new CompanyParameters(), HttpContext);
