@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace Test.APINET8
 {
 
+
     public class CompaniesTest
     {
         private CompaniesController _controller;
