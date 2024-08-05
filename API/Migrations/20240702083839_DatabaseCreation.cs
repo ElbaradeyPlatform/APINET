@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace APINET8.Migrations
+namespace API.Migrations
 {
     /// <inheritdoc />
     public partial class DatabaseCreation : Migration

@@ -15,12 +15,12 @@ using Microsoft.Extensions.Configuration;
 using System.Dynamic;
 using Entities.Handlers;
 using Microsoft.AspNetCore.Routing;
-using APINET8.Utility;
+using API.Utility;
 using Microsoft.AspNetCore.Http;
 using Entities.DataModels;
 using Entities.LinkModels;
 using Microsoft.AspNetCore.Http.HttpResults;
-namespace Test.APINET8
+namespace Test.API
 {
     public class EmployeesTest 
     {
@@ -44,13 +44,13 @@ namespace Test.APINET8
             _companyLinks = new CompanyLinks(_linkGenerator.Object, _companyshapper);
             _mapper = new Mock<IMapper>();
             var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-            var builder = new DbContextOptionsBuilder<RepositoryContext>().UseSqlServer(configuration.GetConnectionString("sqlConnection"), b => b.MigrationsAssembly("APINET8"));
+            var builder = new DbContextOptionsBuilder<RepositoryContext>().UseSqlServer(configuration.GetConnectionString("sqlConnection"), b => b.MigrationsAssembly("API"));
             var context = new RepositoryContext(builder.Options);
             _repo = new RepositoryManager(context);
             var logger = new LoggerManager();
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             var mapper = config.CreateMapper();
-            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper, _employeeLinks, _companyLinks);
+            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper, _employeeLinks, _companyLinks,null,null);
             _controller = new EmployeesController(serviceManager);
             _controller.ControllerContext.HttpContext = new DefaultHttpContext();
         }

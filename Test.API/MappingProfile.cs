@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Test.APINET8
+namespace Test.API
 {
     public class MappingProfile : Profile
     {

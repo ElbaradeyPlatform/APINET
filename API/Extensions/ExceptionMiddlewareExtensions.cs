@@ -4,7 +4,7 @@ using Entities.GenericModels;
 using Microsoft.AspNetCore.Diagnostics;
 
 
-namespace APINET8.Extensions
+namespace API.Extensions
 {
     public static class ExceptionMiddlewareExtensions
     {

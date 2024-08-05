@@ -8,7 +8,7 @@ using Repository;
 
 #nullable disable
 
-namespace APINET8.Migrations
+namespace API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
     [Migration("20240702083839_DatabaseCreation")]

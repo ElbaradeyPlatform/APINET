@@ -5,7 +5,7 @@ using Shared.DataTransferObjects;
 using Microsoft.Net.Http.Headers;
 //using Microsoft.AspNetCore.Http;
 //using System.Net.Http;
-namespace APINET8.Utility
+namespace API.Utility
 {
     public class EmployeeLinks : IEmployeeLinks
     {

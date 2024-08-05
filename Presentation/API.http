@@ -1,0 +1,11 @@
+@API_HostAddress = https://localhost:5001
+
+GET {{API_HostAddress}}/api/companies/2
+Accept: application/json
+
+###
+
+GET {{API_HostAddress}}/api/companies
+Accept: application/json
+
+###

@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace APINET8.Migrations
+namespace API.Migrations
 {
     /// <inheritdoc />
     public partial class InitialData : Migration

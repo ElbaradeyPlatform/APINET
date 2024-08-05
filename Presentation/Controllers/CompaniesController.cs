@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Entities.Handlers;
 using Entities.LinkModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
 using Presentation.ModelBinders;
@@ -30,6 +31,8 @@ namespace Presentation.Controllers
             return Ok();
         }
 
+        //[Authorize]
+        [Authorize(Roles = "Manager")]
         [HttpGet(Name = "GetCompanies")]
    //     [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)

@@ -4,7 +4,7 @@ using Shared.DataTransferObjects;
 using System.Text;
 
 
-namespace APINET8.OutputFormats
+namespace API.OutputFormats
 {
     public class CsvOutputFormatter : TextOutputFormatter
     {

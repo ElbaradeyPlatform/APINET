@@ -2,7 +2,7 @@
 using Entities.DataModels;
 using Shared.DataTransferObjects;
 
-namespace APINET8.Mapping
+namespace API.Mapping
 {
     public class MappingProfile : Profile
     {
@@ -18,6 +18,7 @@ namespace APINET8.Mapping
             CreateMap<EmployeeForUpdateDto, Employee>();
             CreateMap<CompanyForUpdateDto, Company>();
             CreateMap<EmployeeForUpdateDto, Employee>().ReverseMap();
+            CreateMap<UserForRegistrationDto, User>();
         }
     }
 }
