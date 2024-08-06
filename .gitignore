@@ -6,8 +6,6 @@ bin/
 internal_logs/
 logs/
 /Test.API/appsettings.json
+/API/appsettings.json
 /API/appsettings.Development.json
 /API/appsettings.Production.json
-appsettings.Production.json
-appsettings.Development.json
-/API/appsettings.json
