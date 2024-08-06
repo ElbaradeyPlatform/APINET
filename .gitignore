@@ -5,6 +5,8 @@ obj/
 bin/
 internal_logs/
 logs/
-/Test.APINET8/appsettings.json
+/Test.API/appsettings.json
 /API/appsettings.Development.json
 /API/appsettings.Production.json
+appsettings.Production.json
+appsettings.Development.json
