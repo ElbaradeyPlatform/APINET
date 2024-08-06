@@ -10,3 +10,4 @@ logs/
 /API/appsettings.Production.json
 appsettings.Production.json
 appsettings.Development.json
+/API/appsettings.json
