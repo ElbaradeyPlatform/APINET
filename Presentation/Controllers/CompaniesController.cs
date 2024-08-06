@@ -15,7 +15,8 @@ namespace Presentation.Controllers
 {
     [ApiVersion("1.0")]
     [Route("api/companies")]
-   // [Route("api/{v:apiversion}/companies")]
+    [ApiExplorerSettings(GroupName = "v1")]
+    // [Route("api/{v:apiversion}/companies")]
     [ApiController]
     [ResponseCache(CacheProfileName = "120SecondsDuration")]
     public class CompaniesController : ControllerBase
@@ -31,8 +32,11 @@ namespace Presentation.Controllers
             return Ok();
         }
 
-        //[Authorize]
-        [Authorize(Roles = "Manager")]
+        /// <summary>
+        /// Gets the list of all companies
+        /// </summary>
+        /// <returns>The companies list</returns>
+        [Authorize]
         [HttpGet(Name = "GetCompanies")]
    //     [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)
@@ -58,6 +62,14 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Creates a newly created company
+        /// </summary>
+        /// <param name="company"></param>
+        /// <returns>A newly created company</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item is null</response>
+        /// <response code="422">If the model is invalid</response>
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)

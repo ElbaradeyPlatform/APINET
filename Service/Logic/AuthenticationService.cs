@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities.ConfigurationModels;
 using Entities.DataModels;
 using Entities.Exceptions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -19,16 +21,18 @@ namespace Service.Logic
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
         private User? _user;
-        public AuthenticationService(ILoggerManager logger, IMapper mapper,UserManager<User> userManager, IConfiguration configuration)
+        private readonly JwtConfiguration _jwtConfiguration;
+        private readonly IOptionsSnapshot<JwtConfiguration> _configuration;
+        public AuthenticationService(ILoggerManager logger, IMapper mapper,UserManager<User> userManager, IOptionsSnapshot<JwtConfiguration> configuration)
         {
             _logger = logger; 
             _mapper = mapper;
             _userManager = userManager;
             _configuration = configuration;
+            _jwtConfiguration = new JwtConfiguration();
+            _jwtConfiguration = _configuration.Value;
         }
-
         public async Task<IdentityResult> RegisterUser(UserForRegistrationDto userForRegistration)
         {
             var user = _mapper.Map<User>(userForRegistration);
@@ -37,7 +41,6 @@ namespace Service.Logic
                 await _userManager.AddToRolesAsync(user, userForRegistration.Roles);
             return result;
         }
-
         public async Task<bool> ValidateUser(UserForAuthenticationDto userForAuth)
         {
             _user = await _userManager.FindByNameAsync(userForAuth.UserName);
@@ -62,8 +65,7 @@ namespace Service.Logic
         }
         private SigningCredentials GetSigningCredentials()
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["validIssuer"];
+            var secretKey = _jwtConfiguration.ValidIssuer;
             var key = Encoding.UTF8.GetBytes(secretKey);
             var secret = new SymmetricSecurityKey(key);
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
@@ -80,13 +82,15 @@ namespace Service.Logic
         }
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var x = Convert.ToDouble(_jwtConfiguration.Expires);
+            var _expries = DateTime.Now.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expires));
             var tokenOptions = new JwtSecurityToken
             (
-            issuer: jwtSettings["validIssuer"],
-            audience: jwtSettings["validAudience"],
+            issuer: _jwtConfiguration.ValidIssuer,
+            audience: _jwtConfiguration.ValidAudience,
+            
             claims: claims,
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
+            expires: _expries,
             signingCredentials: signingCredentials
             );
             return tokenOptions;
@@ -102,8 +106,7 @@ namespace Service.Logic
         }
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["validIssuer"];
+            var secretKey = _jwtConfiguration.ValidIssuer;
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
@@ -111,8 +114,8 @@ namespace Service.Logic
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                 ValidateLifetime = false,
-                ValidIssuer = jwtSettings["validIssuer"],
-                ValidAudience = jwtSettings["validAudience"]
+                ValidIssuer = _jwtConfiguration.ValidIssuer,
+                ValidAudience = _jwtConfiguration.ValidAudience
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;

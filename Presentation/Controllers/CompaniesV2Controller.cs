@@ -13,7 +13,8 @@ namespace Presentation.Controllers
 {
     [ApiVersion("2.0", Deprecated = true)]
     [Route("api/companies")]
-  //  [Route("api/{v:apiversion}/companies")]
+    [ApiExplorerSettings(GroupName = "v2")]
+    //  [Route("api/{v:apiversion}/companies")]
     [ApiController]
     public class CompaniesV2Controller : ControllerBase
     {
