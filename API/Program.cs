@@ -33,7 +33,7 @@ builder.Services.AddScoped<ICompanyLinks, CompanyLinks>();
 builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
 builder.Services.ConfigureResponseCaching();
 builder.Services.AddMemoryCache();
-builder.Services.ConfigureRateLimitingOptions();
+//builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
@@ -71,7 +71,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-app.UseIpRateLimiting();
+//app.UseIpRateLimiting();
 app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 
