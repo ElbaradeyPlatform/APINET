@@ -36,7 +36,7 @@ namespace Presentation.Controllers
         /// Gets the list of all companies
         /// </summary>
         /// <returns>The companies list</returns>
-        [Authorize]
+        //[Authorize]
         [HttpGet(Name = "GetCompanies")]
    //     [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)

@@ -12,11 +12,11 @@ using Marvin;
 using AspNetCoreRateLimit;
 using Entities.DataModels;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+//using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Entities.ConfigurationModels;
-using Microsoft.OpenApi.Models;
+//using Microsoft.OpenApi.Models;
 
 
 namespace API.Extensions
@@ -99,97 +99,97 @@ namespace API.Extensions
                 }
             });
         }
-        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
-        {
-            var jwtConfiguration = new JwtConfiguration();
-            configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
-            var secretKey = jwtConfiguration.ValidIssuer;
-            services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtConfiguration.ValidIssuer,
-                    ValidAudience = jwtConfiguration.ValidAudience,
-                    IssuerSigningKey = new  SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-                };
-            });
-        }
-        public static void AddJwtConfiguration(this IServiceCollection services,IConfiguration configuration) =>services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
-        public static void ConfigureSwagger(this IServiceCollection services)
-        {
-            services.AddSwaggerGen(s =>
-            {
-                s.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "AE For Life API",
-                    Version = "v1",
-                    Description = "AE For Life API by AE",
-                    TermsOfService = new Uri("https://example.com/terms"),
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Ahmed Elbaradey",
-                        Email = "elbaradeyahmed1985@gmail.com",
-                        Url = new Uri("https://linkedin.com/ahmedelbaradey"),
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "AE For Life  API LICX",
-                        Url = new Uri("https://example.com/license"),
-                    }
-                });
-                s.SwaggerDoc("v2", new OpenApiInfo
-                {
-                    Title = "AE For Life API",
-                    Version = "v2",
-                    Description = "AE For Life API by AE",
-                    TermsOfService = new Uri("https://example.com/terms"),
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Ahmed Elbaradey",
-                        Email = "elbaradeyahmed1985@gmail.com",
-                        Url = new Uri("https://linkedin.com/ahmedelbaradey"),
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "AE For Life  API LICX",
-                        Url = new Uri("https://example.com/license"),
-                    }
-                });
-                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Place to add JWT with Bearer",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-                s.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,Id = "Bearer"
-                            },
-                            Name = "Bearer"
-                        },
-                        new List<string>()
-                    }
-                });
-                //var xmlFile = $"{typeof(Presentation.AssemblyReference).Assembly.GetName().Name}.xml";
-                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                //s.IncludeXmlComments(xmlPath);
-            });
-        }
+        //public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    var jwtConfiguration = new JwtConfiguration();
+        //    configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
+        //    var secretKey = jwtConfiguration.ValidIssuer;
+        //    services.AddAuthentication(opt =>
+        //    {
+        //        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    })
+        //    .AddJwtBearer(options =>
+        //    {
+        //        options.TokenValidationParameters = new TokenValidationParameters
+        //        {
+        //            ValidateIssuer = true,
+        //            ValidateAudience = true,
+        //            ValidateLifetime = true,
+        //            ValidateIssuerSigningKey = true,
+        //            ValidIssuer = jwtConfiguration.ValidIssuer,
+        //            ValidAudience = jwtConfiguration.ValidAudience,
+        //            IssuerSigningKey = new  SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        //        };
+        //    });
+        //}
+        //public static void AddJwtConfiguration(this IServiceCollection services,IConfiguration configuration) =>services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
+        //public static void ConfigureSwagger(this IServiceCollection services)
+        //{
+        //    services.AddSwaggerGen(s =>
+        //    {
+        //        s.SwaggerDoc("v1", new OpenApiInfo
+        //        {
+        //            Title = "AE For Life API",
+        //            Version = "v1",
+        //            Description = "AE For Life API by AE",
+        //            TermsOfService = new Uri("https://example.com/terms"),
+        //            Contact = new OpenApiContact
+        //            {
+        //                Name = "Ahmed Elbaradey",
+        //                Email = "elbaradeyahmed1985@gmail.com",
+        //                Url = new Uri("https://linkedin.com/ahmedelbaradey"),
+        //            },
+        //            License = new OpenApiLicense
+        //            {
+        //                Name = "AE For Life  API LICX",
+        //                Url = new Uri("https://example.com/license"),
+        //            }
+        //        });
+        //        s.SwaggerDoc("v2", new OpenApiInfo
+        //        {
+        //            Title = "AE For Life API",
+        //            Version = "v2",
+        //            Description = "AE For Life API by AE",
+        //            TermsOfService = new Uri("https://example.com/terms"),
+        //            Contact = new OpenApiContact
+        //            {
+        //                Name = "Ahmed Elbaradey",
+        //                Email = "elbaradeyahmed1985@gmail.com",
+        //                Url = new Uri("https://linkedin.com/ahmedelbaradey"),
+        //            },
+        //            License = new OpenApiLicense
+        //            {
+        //                Name = "AE For Life  API LICX",
+        //                Url = new Uri("https://example.com/license"),
+        //            }
+        //        });
+        //        s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        //        {
+        //            In = ParameterLocation.Header,
+        //            Description = "Place to add JWT with Bearer",
+        //            Name = "Authorization",
+        //            Type = SecuritySchemeType.ApiKey,
+        //            Scheme = "Bearer"
+        //        });
+        //        s.AddSecurityRequirement(new OpenApiSecurityRequirement()
+        //        {
+        //            {
+        //                new OpenApiSecurityScheme
+        //                {
+        //                    Reference = new OpenApiReference
+        //                    {
+        //                        Type = ReferenceType.SecurityScheme,Id = "Bearer"
+        //                    },
+        //                    Name = "Bearer"
+        //                },
+        //                new List<string>()
+        //            }
+        //        });
+        //        //var xmlFile = $"{typeof(Presentation.AssemblyReference).Assembly.GetName().Name}.xml";
+        //        //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        //        //s.IncludeXmlComments(xmlPath);
+        //    });
+        //}
     }
 }

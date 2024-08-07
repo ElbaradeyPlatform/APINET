@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class RepositoryContext :  IdentityDbContext<User>
+    public class RepositoryContext : DbContext//  IdentityDbContext<User>
     {
         public RepositoryContext(DbContextOptions options)
         : base(options)
@@ -20,7 +20,7 @@ namespace Repository
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
-            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+     //       modelBuilder.ApplyConfiguration(new RoleConfiguration());
 
 
         }

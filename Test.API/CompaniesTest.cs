@@ -57,7 +57,7 @@ namespace Test.API
             var logger = new LoggerManager();
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             var mapper = config.CreateMapper();
-            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper,_employeeLinks, _companyLinks,null,null);
+            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper,_employeeLinks, _companyLinks/*,null,null*/);
             _controller = new CompaniesController(serviceManager);
             _controller.ControllerContext.HttpContext = new DefaultHttpContext();
         }
