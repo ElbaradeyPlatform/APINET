@@ -13,7 +13,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-<DocumentationFile>Presentation.xml</DocumentationFile>
+<DocumentationFile>../API/Presentation.xml</DocumentationFile>
 <OutputPath></OutputPath>
 <NoWarn>1701;1702;1591</NoWarn>
 </PropertyGroup>

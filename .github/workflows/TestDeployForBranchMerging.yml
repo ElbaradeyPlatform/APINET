@@ -3,7 +3,7 @@ name: Build & Test xUnit
 on:
   push:
     branches:
-      - "main"
+      - "notmain"
   workflow_dispatch:
 env:
   AZURE_WEBAPP_NAME: "APINET8"
