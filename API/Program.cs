@@ -31,7 +31,7 @@ builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 builder.Services.AddScoped<ICompanyLinks, CompanyLinks>();
 builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
-builder.Services.ConfigureResponseCaching();
+//builder.Services.ConfigureResponseCaching();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
@@ -39,7 +39,7 @@ builder.Services.AddAuthentication();
 //builder.Services.ConfigureIdentity();
 //builder.Services.ConfigureJWT(builder.Configuration);
 //builder.Services.AddJwtConfiguration(builder.Configuration);
-//builder.Services.ConfigureSwagger();
+builder.Services.ConfigureSwagger();
 //builder.Services.ConfigureHttpCacheHeaders();
 NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() => new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson().Services.BuildServiceProvider().GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>().First();
 builder.Services.AddControllers(config =>
@@ -78,11 +78,11 @@ app.UseResponseCaching();
 //app.UseHttpCacheHeaders();
 app.UseAuthentication();
 //app.UseAuthorization();
-//app.UseSwagger();
-//app.UseSwaggerUI(s =>
-//{
-//    s.SwaggerEndpoint("/swagger/v1/swagger.json", "AE For Life API v1");
-//    s.SwaggerEndpoint("/swagger/v2/swagger.json", "AE For Life API v2");
-//});
+app.UseSwagger();
+app.UseSwaggerUI(s =>
+{
+    s.SwaggerEndpoint("/swagger/v1/swagger.json", "AE For Life API v1");
+    s.SwaggerEndpoint("/swagger/v2/swagger.json", "AE For Life API v2");
+});
 app.MapControllers();
 app.Run();

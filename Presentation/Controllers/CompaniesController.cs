@@ -16,14 +16,16 @@ namespace Presentation.Controllers
     [ApiVersion("1.0")]
     [Route("api/companies")]
     [ApiExplorerSettings(GroupName = "v1")]
-    // [Route("api/{v:apiversion}/companies")]
     [ApiController]
-    [ResponseCache(CacheProfileName = "120SecondsDuration")]
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _service;
         public CompaniesController(IServiceManager service) => _service = service;
 
+        /// <summary>
+        /// Get Options Header
+        /// </summary>
+        /// <returns>Header Options</returns>
         [HttpOptions(Name = "CompaniesOptions")]
     
         public IActionResult GetCompaniesOptions()
@@ -35,10 +37,11 @@ namespace Presentation.Controllers
         /// <summary>
         /// Gets the list of all companies
         /// </summary>
-        /// <returns>The companies list</returns>
-        //[Authorize]
+        /// <param name="companyParameters"></param>
+        /// <returns>Generic Response</returns>
+        /// <response code="200">Returns the Companies</response>
+        /// <response code="400">If the item is null</response>
         [HttpGet(Name = "GetCompanies")]
-   //     [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)
         {
             var linkParams = new CompanyLinkParameters(companyParameters, HttpContext);
@@ -46,6 +49,13 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Gets the list of all companies by ids
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns>Generic Response</returns>
+        /// <response code="200">Returns the Companies</response>
+        /// <response code="400">If the list  is null</response>
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection([ModelBinder(BinderType =typeof(ArrayModelBinder))]IEnumerable<int> ids)
         {
@@ -54,6 +64,14 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
+
+        /// <summary>
+        /// Get Single Company
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Generic Response</returns>
+        /// <response code="200">Returns the item</response>
+        /// <response code="400">If the item  is null</response>       
         [HttpGet("{id:int}", Name = "CompanyById")]
         public async Task<IActionResult> GetCompany(int id)
         {
@@ -66,7 +84,7 @@ namespace Presentation.Controllers
         /// Creates a newly created company
         /// </summary>
         /// <param name="company"></param>
-        /// <returns>A newly created company</returns>
+        /// <returns>Generic Response</returns>
         /// <response code="201">Returns the newly created item</response>
         /// <response code="400">If the item is null</response>
         /// <response code="422">If the model is invalid</response>
@@ -79,6 +97,15 @@ namespace Presentation.Controllers
             return CreatedAtRoute("CompanyById", new { id = result.id }, result.response);
         }
 
+
+        /// <summary>
+        /// Creates a newly created companies
+        /// </summary>
+        /// <param name="companyCollection"></param>
+        /// <returns>Generic Response</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item is null</response>
+        /// <response code="422">If the model is invalid</response>
         [HttpPost("collection")]
         public async Task<IActionResult> CreateCompanyCollection([FromBody]IEnumerable<CompanyForCreationDto> companyCollection)
         {
@@ -87,6 +114,13 @@ namespace Presentation.Controllers
             return CreatedAtRoute("CompanyCollection", new { result.ids }, result.response);
         }
 
+        /// <summary>
+        /// return success message 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Generic Response</returns>
+        /// <response code="200">sucess message</response>
+        /// <response code="400">If the item is null</response>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
@@ -94,6 +128,15 @@ namespace Presentation.Controllers
             return Ok(value: new GenericResponse(DateTime.Now.ToString("yyyy-MM-dd"),payload: null, null, string.Empty));
         }
 
+        /// <summary>
+        /// returns updated company
+        /// </summary>
+        /// <param name="id">int</param>
+        /// <param name="company">CompanyForUpdateDto</param>
+        /// <returns>Generic Response</returns>
+        /// <response code="201">Returns the  updated item</response>
+        /// <response code="400">If the item is null</response>
+        /// <response code="422">If the model is invalid</response>
         [HttpPut("{id:int}")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyForUpdateDto company)
