@@ -27,7 +27,13 @@ namespace Service
             _employeeService = new Lazy<IEmployeeService>(() =>new EmployeeService(repositoryManager, logger, mapper, employeedataShaper, employeeLinks));
             _authenticationService = new Lazy<IAuthenticationService>(() =>new AuthenticationService(logger, mapper, userManager,configuration));
         }
-        
+        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<EmployeeDto> employeedataShaper, IDataShaper<CompanyDto> companydataShaper, IEmployeeLinks employeeLinks, ICompanyLinks companyLinks)
+        {
+            _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper, companydataShaper, companyLinks));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, mapper, employeedataShaper, employeeLinks));
+             
+        }
+
         public ICompanyService CompanyService => _companyService.Value;
         public IEmployeeService EmployeeService => _employeeService.Value;
         public IAuthenticationService AuthenticationService => _authenticationService.Value;

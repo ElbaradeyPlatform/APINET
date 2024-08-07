@@ -22,6 +22,9 @@ using Entities.LinkModels;
 using Entities.DataModels;
 using System.Linq;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Entities.ConfigurationModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 namespace Test.API
 {
 
@@ -37,6 +40,7 @@ namespace Test.API
         private readonly  IEmployeeLinks _employeeLinks;
         private readonly ICompanyLinks _companyLinks;
         private readonly Mock<LinkGenerator> _linkGenerator;
+
         public CompaniesTest()
         {
             _employeeshapper = new DataShaper<EmployeeDto>();
@@ -44,6 +48,7 @@ namespace Test.API
              _linkGenerator = new Mock<LinkGenerator>();
             _employeeLinks = new EmployeeLinks(_linkGenerator.Object, _employeeshapper);
             _companyLinks = new CompanyLinks(_linkGenerator.Object, _companyshapper);
+         
             _mapper = new Mock<IMapper>();
             var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
             var builder = new DbContextOptionsBuilder<RepositoryContext>().UseSqlServer(configuration.GetConnectionString("sqlConnection"), b => b.MigrationsAssembly("API"));
@@ -52,7 +57,7 @@ namespace Test.API
             var logger = new LoggerManager();
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             var mapper = config.CreateMapper();
-            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper,_employeeLinks, _companyLinks,null,null);
+            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper,_employeeLinks, _companyLinks);
             _controller = new CompaniesController(serviceManager);
             _controller.ControllerContext.HttpContext = new DefaultHttpContext();
         }

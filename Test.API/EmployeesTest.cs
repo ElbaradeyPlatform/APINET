@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Http;
 using Entities.DataModels;
 using Entities.LinkModels;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Entities.ConfigurationModels;
 namespace Test.API
 {
     public class EmployeesTest 
@@ -34,6 +37,7 @@ namespace Test.API
         private readonly IEmployeeLinks _employeeLinks;
         private readonly ICompanyLinks _companyLinks;
         private readonly Mock<LinkGenerator> _linkGenerator;
+
         public EmployeesTest()
         {
             _employeeshapper = new DataShaper<EmployeeDto>();
@@ -50,7 +54,7 @@ namespace Test.API
             var logger = new LoggerManager();
             var config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             var mapper = config.CreateMapper();
-            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper, _employeeLinks, _companyLinks,null,null);
+            serviceManager = new ServiceManager(_repo, logger, mapper, _employeeshapper, _companyshapper, _employeeLinks, _companyLinks);
             _controller = new EmployeesController(serviceManager);
             _controller.ControllerContext.HttpContext = new DefaultHttpContext();
         }
