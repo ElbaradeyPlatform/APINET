@@ -31,13 +31,13 @@ builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 builder.Services.AddScoped<ICompanyLinks, CompanyLinks>();
 builder.Services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
-//builder.Services.ConfigureResponseCaching();
+builder.Services.ConfigureResponseCaching();
 builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication();
-//builder.Services.ConfigureIdentity();
-//builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
 //builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.ConfigureSwagger();
 //builder.Services.ConfigureHttpCacheHeaders();
@@ -77,7 +77,7 @@ app.UseResponseCaching();
 
 //app.UseHttpCacheHeaders();
 app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI(s =>
 {

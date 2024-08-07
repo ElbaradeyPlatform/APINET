@@ -12,7 +12,7 @@ using Marvin;
 using AspNetCoreRateLimit;
 using Entities.DataModels;
 using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Entities.ConfigurationModels;
@@ -85,44 +85,44 @@ namespace API.Extensions
                 }
             });
         }
-        //public static void ConfigureIdentity(this IServiceCollection services)
-        //{
-        //    var builder = services.AddIdentity<User, IdentityRole>(o =>
-        //    {
-        //        o.Password.RequireDigit = true;
-        //        o.Password.RequireLowercase = false;
-        //        o.Password.RequireUppercase = false;
-        //        o.Password.RequireNonAlphanumeric = false;
-        //        o.Password.RequiredLength = 10;
-        //        o.User.RequireUniqueEmail = true;
-        //    })
-        //    .AddEntityFrameworkStores<RepositoryContext>()
-        //    .AddDefaultTokenProviders();
-        //}
-        //public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    var jwtConfiguration = new JwtConfiguration();
-        //    configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
-        //    var secretKey = jwtConfiguration.ValidIssuer;
-        //    services.AddAuthentication(opt =>
-        //    {
-        //        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        //    })
-        //    .AddJwtBearer(options =>
-        //    {
-        //        options.TokenValidationParameters = new TokenValidationParameters
-        //        {
-        //            ValidateIssuer = true,
-        //            ValidateAudience = true,
-        //            ValidateLifetime = true,
-        //            ValidateIssuerSigningKey = true,
-        //            ValidIssuer = jwtConfiguration.ValidIssuer,
-        //            ValidAudience = jwtConfiguration.ValidAudience,
-        //            IssuerSigningKey = new  SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-        //        };
-        //    });
-        //}
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            var builder = services.AddIdentity<User, IdentityRole>(o =>
+            {
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 10;
+                o.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<RepositoryContext>()
+            .AddDefaultTokenProviders();
+        }
+        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtConfiguration = new JwtConfiguration();
+            configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
+            var secretKey = jwtConfiguration.ValidIssuer;
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtConfiguration.ValidIssuer,
+                    ValidAudience = jwtConfiguration.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+            });
+        }
         public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) => services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
         public static void ConfigureSwagger(this IServiceCollection services)
         {
