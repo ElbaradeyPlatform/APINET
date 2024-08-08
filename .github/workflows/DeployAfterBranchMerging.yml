@@ -84,7 +84,7 @@ jobs:
         run: dotnet publish -c Release --output ./publish
   
       - name: Deploy To Azure Web App
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v4
         with: 
           app-name : ${{env.AZURE_WEBAPP_NAME}}
           publish-profile : ${{secrets.DEPLOY_APINET8_TO_AZURE}}
