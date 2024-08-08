@@ -40,7 +40,6 @@ namespace Presentation.Controllers
                 return Unauthorized();
             var tokenDto = await _service.AuthenticationService.CreateToken(populateExp: true);
             return Ok(tokenDto);
-            //  return Ok(new { Token = await _service.AuthenticationService.CreateToken() });
         }
     }
 }

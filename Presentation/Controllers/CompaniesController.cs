@@ -42,6 +42,7 @@ namespace Presentation.Controllers
         /// <response code="200">Returns the Companies</response>
         /// <response code="400">If the item is null</response>
         [HttpGet(Name = "GetCompanies")]
+        [Authorize]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)
         {
             var linkParams = new CompanyLinkParameters(companyParameters, HttpContext);
@@ -73,6 +74,7 @@ namespace Presentation.Controllers
         /// <response code="200">Returns the item</response>
         /// <response code="400">If the item  is null</response>       
         [HttpGet("{id:int}", Name = "CompanyById")]
+        [Authorize]
         public async Task<IActionResult> GetCompany(int id)
         {
             var linkParams = new CompanyLinkParameters(new CompanyParameters(), HttpContext);
