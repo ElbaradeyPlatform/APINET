@@ -1,9 +1,5 @@
 name: Post Man Test
-
 on:
-  push:
-    branches:
-      - "mergeAfterDeployAction"
   workflow_dispatch:
 
 run-name: Post Man Test by @${{ github.actor }} on ${{ github.ref }}

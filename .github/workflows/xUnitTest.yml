@@ -1,0 +1,36 @@
+name: xUnit Test
+
+on:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+run-name: xUnit Test by @${{ github.actor }} on ${{ github.ref }}
+jobs:
+  xUnit-Test:
+    name: xUnit Test
+    runs-on: windows-latest   
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
+    steps:      
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run xUnit Test
+        run: dotnet test ./Test.API/Test.API.csproj  --verbosity normal --logger "trx;LogFileName=test-results.trx" 
+        
+      - name: Report Test
+        uses: dorny/test-reporter@v1
+        with:
+          name: Publish xUnit Test Result
+          reporter: dotnet-trx
+          path: "**/test-results.trx"  

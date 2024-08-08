@@ -1,4 +1,4 @@
-name: Build & Test xUnit
+name: When Merge Branch
 
 on:
   push:

@@ -1,0 +1,40 @@
+name:  Deploy To Azure
+
+on:
+  workflow_dispatch:
+env:
+  AZURE_WEBAPP_NAME: "APINET8"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+run-name: Deploy To Azure by @${{ github.actor }} on ${{ github.ref }}
+jobs:
+  Deploy-To-Azure:
+    name: Deploy To Azure
+    runs-on: windows-latest   
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
+    steps:      
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build solution
+        run: dotnet build -c Release
+
+      - name: Publish
+        run: dotnet publish -c Release --output ./publish
+  
+      - name: Deploy To Azure Web App
+        uses: azure/webapps-deploy@v3
+        with: 
+          app-name : ${{env.AZURE_WEBAPP_NAME}}
+          publish-profile : ${{secrets.DEPLOY_APINET8_TO_AZURE}}
+          package : ./publish 

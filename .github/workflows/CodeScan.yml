@@ -1,4 +1,4 @@
-name: Scan Code by CodeQL
+name: Scan Code by CodeQL v2
 
 on:
   push:
