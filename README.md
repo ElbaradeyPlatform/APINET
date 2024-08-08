@@ -1,4 +1,4 @@
-
+[![Deploy To Azure](https://github.com/ElbaradeyPlatform/APINET/actions/workflows/DeployToAzure.yml/badge.svg)](https://github.com/ElbaradeyPlatform/APINET/actions/workflows/DeployToAzure.yml)
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
   <diagram id="WI9T0HZ2pTsCkuznbFz-" name="Page-1">
     <mxGraphModel dx="904" dy="493" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
