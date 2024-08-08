@@ -1,3 +1,4 @@
+[![Post Man Test](https://github.com/ElbaradeyPlatform/APINET/actions/workflows/PostmanTest.yml/badge.svg)](https://github.com/ElbaradeyPlatform/APINET/actions/workflows/PostmanTest.yml)
 [![Deploy To Azure](https://github.com/ElbaradeyPlatform/APINET/actions/workflows/DeployToAzure.yml/badge.svg)](https://github.com/ElbaradeyPlatform/APINET/actions/workflows/DeployToAzure.yml)
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
   <diagram id="WI9T0HZ2pTsCkuznbFz-" name="Page-1">
